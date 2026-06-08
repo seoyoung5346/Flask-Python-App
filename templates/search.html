@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ keyword }} 검색 결과 — DevHunt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0c0f;
+      --surface: #13151a;
+      --border: #1e2129;
+      --accent: #e8ff47;
+      --accent2: #47c9ff;
+      --text: #f0f0ec;
+      --muted: #6b7280;
+      --radius: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 350px;
+      background: radial-gradient(ellipse, rgba(232, 255, 71, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      animation: fadeDown 0.5s ease both;
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .logo span { color: var(--accent); }
+
+    /* Search bar (top) */
+    .search-form {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.4rem;
+      transition: border-color 0.2s;
+      flex: 1;
+      max-width: 480px;
+    }
+
+    .search-form:focus-within { border-color: rgba(232, 255, 71, 0.4); }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      padding: 0.5rem 0.8rem;
+    }
+
+    .search-input::placeholder { color: var(--muted); }
+
+    .search-btn {
+      background: var(--accent);
+      color: #0b0c0f;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .search-btn:hover { background: #d4eb30; }
+    .search-btn:active { transform: scale(0.97); }
+
+    /* Results heading */
+    .results-meta {
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-meta h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .results-meta h2 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .results-meta .count {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    /* Table */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: var(--surface);
+    }
+
+    thead th {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 1rem 1.2rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-top: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+    td {
+      padding: 1rem 1.2rem;
+      vertical-align: top;
+      font-size: 0.9rem;
+    }
+
+    .td-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .td-company {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .td-desc {
+      color: #9ca3af;
+      line-height: 1.5;
+      max-width: 340px;
+    }
+
+    .td-link a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--accent2);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+
+    .td-link a:hover { color: #fff; }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      padding: 5rem 2rem;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .back-link:hover { opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <div class="header">
+      <a class="logo" href="/">Dev<span>Hunt</span></a>
+
+      <form class="search-form" action="/search" method="get">
+        <input
+          class="search-input"
+          type="text"
+          name="keyword"
+          value="{{ keyword }}"
+          placeholder="다시 검색..."
+          autocomplete="off"
+        />
+        <button class="search-btn" type="submit">검색</button>
+      </form>
+    </div>
+
+    {% if keyword %}
+      <div class="results-meta">
+        <h2><em>"{{ keyword }}"</em> 검색 결과</h2>
+        <p class="count">총 {{ jobs|length }}개의 채용공고를 찾았습니다.</p>
+      </div>
+    {% endif %}
+
+    {% if jobs %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>포지션</th>
+              <th>회사명</th>
+              <th>상세 정보</th>
+              <th>링크</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in jobs %}
+            <tr>
+              <td class="td-title">{{ job.title }}</td>
+              <td class="td-company">{{ job.company_name }}</td>
+              <td class="td-desc">{{ job.description }}</td>
+              <td class="td-link">
+                <a href="{{ job.link }}" target="_blank" rel="noopener">
+                  지원하기 →
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    {% else %}
+      <div class="empty">
+        <div class="empty-icon">🔍</div>
+        {% if keyword %}
+          <h3>"{{ keyword }}"에 해당하는 공고가 없습니다.</h3>
+          <p>다른 키워드로 다시 검색해 보세요.</p>
+        {% else %}
+          <h3>검색어를 입력해 주세요.</h3>
+          <p>Python, React, Java 등 원하는 기술 스택을 검색해 보세요.</p>
+        {% endif %}
+        <a class="back-link" href="/">← 홈으로 돌아가기</a>
+      </div>
+    {% endif %}
+
+  </div>
+</body>
+</html>
