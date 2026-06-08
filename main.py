@@ -5,9 +5,13 @@ import json
 
 app = Flask("JobScraper")
 
+import os
 
 def load_jobs():
-    with open("jobs.json", "r") as f:
+    # main.py 파일 기준으로 절대 경로 설정
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(base_dir, "jobs.json")
+    with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 # /BLUEPRINT
