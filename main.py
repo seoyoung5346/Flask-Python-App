@@ -2,10 +2,13 @@
 
 from flask import Flask, render_template, request
 import json
+import os  # ← 추가
 
 app = Flask("JobScraper")
 
 def load_jobs():
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # ← 추가
+    path = os.path.join(base_dir, "jobs.json")             # ← 추가
     with open("jobs.json", "r") as f:
         return json.load(f)
 
@@ -41,6 +44,7 @@ def search():
 # BLUEPRINT | DONT EDIT
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))  # ← 수정
+    app.run(host="0.0.0.0", port=port) #app.run()
 
 # /BLUEPRINT
